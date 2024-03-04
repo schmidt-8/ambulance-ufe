@@ -38,4 +38,23 @@ describe('ssch-ambulance-wl-list', () => {
     expect(expectedPatients).toEqual(sampleEntries.length);
     expect(items.length).toEqual(expectedPatients);
   });
+  
+  it('renders error message on network issues', async () => {
+    mock.onGet().networkError();
+    const page = await newSpecPage({
+      components: [SschAmbulanceWlList],  //
+      html: `<ssch-ambulance-wl-list ambulance-id="test-ambulance" api-base="http://test/api"></ssch-ambulance-wl-list>`,  //
+    });
+
+    const wlList = page.rootInstance as SschAmbulanceWlList; //
+    const expectedPatients = wlList?.waitingPatients?.length
+
+    const errorMessage =  page.root.shadowRoot.querySelectorAll(".error");
+    const items = page.root.shadowRoot.querySelectorAll("md-list-item");
+
+    expect(errorMessage.length).toBeGreaterThanOrEqual(1)
+    expect(expectedPatients).toEqual(0);
+    expect(items.length).toEqual(expectedPatients);
+  });
+
 });
